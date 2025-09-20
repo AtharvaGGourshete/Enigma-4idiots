@@ -1,7 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { UserAuth } from "@/context/Authcontext";
@@ -23,8 +29,16 @@ import {
   BrainCircuit,
 } from "lucide-react";
 
+var BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 // --- Reusable Metric Card Component (for grid layout) ---
-const MetricCard = ({ icon: Icon, title, value, description, colorClass = "text-[#c1e141]" }) => (
+const MetricCard = ({
+  icon: Icon,
+  title,
+  value,
+  description,
+  colorClass = "text-[#c1e141]",
+}) => (
   <Card className="bg-white/5 border-black/10 hover:border-black/20 hover:bg-white/10 transition-all duration-300">
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
       <CardTitle className="text-sm font-medium text-neutral-400">{title}</CardTitle>
@@ -44,13 +58,16 @@ const calculateBmi = (weight, height) => {
   return (weight / (heightInMeters * heightInMeters)).toFixed(1);
 };
 
-
 // --- Main Dashboard Page Component ---
 export default function DashboardPage() {
   const { user } = UserAuth();
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [diabetesRisk, setDiabetesRisk] = useState(null);
+  const [heartFailureRisk, setHeartFailureRisk] = useState(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -61,18 +78,21 @@ export default function DashboardPage() {
       setLoading(true);
       try {
         const { data, error: fetchError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
           .single();
         if (fetchError) {
-          if (fetchError.code === 'PGRST116') { // no rows found
+          if (fetchError.code === "PGRST116") {
+            // no rows found
             setProfile(null);
           } else {
             throw fetchError;
           }
         } else {
           setProfile(data);
+          // Fetch risk predictions after profile load
+          fetchRisks();
         }
       } catch (err) {
         console.error("Error fetching profile:", err);
@@ -81,6 +101,37 @@ export default function DashboardPage() {
         setLoading(false);
       }
     };
+
+    const fetchRisks = async () => {
+      try {
+        const hfResponse = await fetch(`${BACKEND_URL}/predict/stability_score`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user.id }),
+        });
+        const hfResult = await hfResponse.json();
+        if (hfResponse.ok) {
+          setHeartFailureRisk(
+            hfResult.heart_failure_risk_prob
+              ? `${(hfResult.heart_failure_risk_prob * 100).toFixed(1)}%`
+              : "N/A"
+          );
+          setDiabetesRisk(
+            hfResult.diabetes_risk_prob
+              ? `${(hfResult.diabetes_risk_prob * 100).toFixed(1)}%`
+              : "N/A"
+          );
+        } else {
+          setHeartFailureRisk("Error");
+          setDiabetesRisk("Error");
+        }
+      } catch (error) {
+        console.error("Error fetching risks:", error);
+        setHeartFailureRisk("Error");
+        setDiabetesRisk("Error");
+      }
+    };
+
     fetchProfileData();
   }, [user]);
 
@@ -113,14 +164,16 @@ export default function DashboardPage() {
         <p className="text-neutral-400 mt-2 max-w-sm">
           Your dashboard is ready. Complete your health profile to see your personalized insights.
         </p>
-        <a href="/onboarding" className="mt-6 bg-[#c1e141] text-black font-semibold py-2 px-6 rounded-lg transition-transform hover:scale-105">
+        <a
+          href="/onboarding"
+          className="mt-6 bg-[#c1e141] text-black font-semibold py-2 px-6 rounded-lg transition-transform hover:scale-105"
+        >
           Complete Onboarding
         </a>
       </div>
     );
   }
 
-  // --- UI STATE 4: SUCCESS ---
   const bmi = calculateBmi(profile.weight_kg, profile.height_cm);
   const healthStabilityScore = 88; // Static value for now
 
@@ -141,12 +194,14 @@ export default function DashboardPage() {
                   <BrainCircuit className="h-6 w-6 text-[#c1e141]" />
                   <CardTitle className="text-xl text-white">AI Health Stability Score</CardTitle>
                 </div>
-                <CardDescription className="text-neutral-400 pt-2">An AI-powered assessment of your health trend based on recent data.</CardDescription>
+                <CardDescription className="text-neutral-400 pt-2">
+                  An AI-powered assessment of your health trend based on recent data.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-end justify-between">
-                    <span className="text-5xl font-bold text-[#c1e141]">{healthStabilityScore}%</span>
-                    <Badge className="bg-green-900/50 border-green-500/30 text-green-300">Stable</Badge>
+                  <span className="text-5xl font-bold text-[#c1e141]">{healthStabilityScore}%</span>
+                  <Badge className="bg-green-900/50 border-green-500/30 text-green-300">Stable</Badge>
                 </div>
                 <Progress value={healthStabilityScore} className="[&>*]:bg-[#c1e141]" />
               </CardContent>
@@ -155,9 +210,18 @@ export default function DashboardPage() {
 
           {/* Vitals Section */}
           <div className="md:col-span-12">
-            <h2 className="text-xl font-semibold tracking-tight mb-4 flex items-center"><Heart className="h-5 w-5 mr-3 text-[#c1e141]" />Core Vitals</h2>
+            <h2 className="text-xl font-semibold tracking-tight mb-4 flex items-center">
+              <Heart className="h-5 w-5 mr-3 text-[#c1e141]" />
+              Core Vitals
+            </h2>
             <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
-              <MetricCard icon={Heart} title="Blood Pressure" value={`${profile.systolic_bp} / ${profile.diastolic_bp}`} description="Sys/Dia (mmHg)" colorClass="text-red-400" />
+              <MetricCard
+                icon={Heart}
+                title="Blood Pressure"
+                value={`${profile.systolic_bp} / ${profile.diastolic_bp}`}
+                description="Sys/Dia (mmHg)"
+                colorClass="text-red-400"
+              />
               <MetricCard icon={TrendingUp} title="Heart Rate" value={profile.heart_rate} description="Beats/min" />
               <MetricCard icon={Zap} title="Sodium Intake" value={profile.sodium_intake} description="mg/day" />
             </div>
@@ -165,7 +229,10 @@ export default function DashboardPage() {
 
           {/* Lifestyle Section */}
           <div className="md:col-span-12">
-            <h2 className="text-xl font-semibold tracking-tight mb-4 flex items-center"><Activity className="h-5 w-5 mr-3 text-[#c1e141]" />Lifestyle Factors</h2>
+            <h2 className="text-xl font-semibold tracking-tight mb-4 flex items-center">
+              <Activity className="h-5 w-5 mr-3 text-[#c1e141]" />
+              Lifestyle Factors
+            </h2>
             <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
               <MetricCard icon={Activity} title="Physical Activity" value={profile.physical_activity} description="mins/week" />
               <MetricCard icon={Bed} title="Sleep Quality" value={`${profile.sleep_quality}/10`} />
@@ -176,7 +243,10 @@ export default function DashboardPage() {
 
           {/* Profile & Measurements Section */}
           <div className="md:col-span-12">
-            <h2 className="text-xl font-semibold tracking-tight mb-4 flex items-center"><UserIcon className="h-5 w-5 mr-3 text-[#c1e141]" />Profile & Measurements</h2>
+            <h2 className="text-xl font-semibold tracking-tight mb-4 flex items-center">
+              <UserIcon className="h-5 w-5 mr-3 text-[#c1e141]" />
+              Profile & Measurements
+            </h2>
             <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
               <MetricCard icon={UserIcon} title="Age" value={profile.age} description="years" />
               <MetricCard icon={Ruler} title="Height" value={profile.height_cm} description="cm" />
@@ -187,17 +257,28 @@ export default function DashboardPage() {
 
           {/* Risk Assessment Section */}
           <div className="md:col-span-12">
-             <h2 className="text-xl font-semibold tracking-tight mb-4 flex items-center"><ShieldCheck className="h-5 w-5 mr-3 text-[#c1e141]" />Risk Assessment</h2>
-             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-                <Card className="bg-neutral-900 border-neutral-800">
-                    <CardHeader><CardTitle>Heart Failure Risk</CardTitle></CardHeader>
-                    <CardContent><p className="text-neutral-300">Moderate risk. Maintain healthy lifestyle and regular checkups.</p></CardContent>
-                </Card>
-                <Card className="bg-neutral-900 border-neutral-800">
-                    <CardHeader><CardTitle>Diabetes Risk</CardTitle></CardHeader>
-                    <CardContent><p className="text-neutral-300">Low risk based on current data. Continue monitoring diet and activity.</p></CardContent>
-                </Card>
-             </div>
+            <h2 className="text-xl font-semibold tracking-tight mb-4 flex items-center">
+              <ShieldCheck className="h-5 w-5 mr-3 text-[#c1e141]" />
+              Risk Assessment
+            </h2>
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+              <Card className="bg-neutral-900 border-neutral-800">
+                <CardHeader>
+                  <CardTitle>Heart Failure Risk</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-neutral-300">{heartFailureRisk ?? "Loading..."}</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-neutral-900 border-neutral-800">
+                <CardHeader>
+                  <CardTitle>Diabetes Risk</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-neutral-300">{diabetesRisk ?? "Loading..."}</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </main>

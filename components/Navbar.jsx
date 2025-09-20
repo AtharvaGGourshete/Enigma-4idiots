@@ -70,7 +70,8 @@ const Navbar = () => {
 
   const navigationLinks = [
     { href: "/community", label: "Community" },
-    { href: "/dashboard", label: "Dashboard" }
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/connect", label: "Connect" }
   ];
 
   return (
