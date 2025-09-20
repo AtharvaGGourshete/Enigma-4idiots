@@ -8,7 +8,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { UserAuth } from "@/context/Authcontext";
 import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
@@ -18,51 +25,44 @@ const containerVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut"
-    }
-  }
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
 };
-
 const itemVariants = {
   hidden: { opacity: 0, x: -20 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut"
-    }
-  }
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
 const Signup = () => {
+  const [username, setUsername] = useState(""); // NEW
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUpNewUser } = UserAuth();
   const router = useRouter();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    
+
+    // New validation for username
+    if (!username.trim()) {
+      toast.error("Please enter a username.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       toast.error("Passwords don't match");
       return;
     }
-
     if (password.length < 6) {
       toast.error("Password must be at least 6 characters");
       return;
     }
-
     setLoading(true);
-
     try {
-      const result = await signUpNewUser(email, password);
+      // Pass username here to your signup function
+      const result = await signUpNewUser(email, password, username);
       if (result.success) {
         toast.success("Account created successfully! Welcome aboard 🎉");
         router.push("/onboarding");
@@ -79,37 +79,21 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#D9E89A] flex items-center justify-center p-4">
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="w-full max-w-md"
-      >
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="w-full max-w-md">
         <div className="text-center mb-8">
           <motion.div variants={itemVariants}>
             <Badge variant="secondary" className="rounded-full px-4 py-2 bg-white/20 text-black border-none mb-4">
               Join HealthCare Plus
             </Badge>
           </motion.div>
-          <motion.h1 
-            variants={itemVariants}
-            className="text-3xl lg:text-4xl font-bold text-black mb-2"
-          >
+          <motion.h1 variants={itemVariants} className="text-3xl lg:text-4xl font-bold text-black mb-2">
             Create Your Account
           </motion.h1>
-          <motion.p 
-            variants={itemVariants}
-            className="text-black/70 text-lg"
-          >
+          <motion.p variants={itemVariants} className="text-black/70 text-lg">
             Start your journey to better health
           </motion.p>
         </div>
-
-        <motion.div
-          variants={itemVariants}
-          whileHover={{ y: -5 }}
-          transition={{ duration: 0.2 }}
-        >
+        <motion.div variants={itemVariants} whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
           <Card className="border-0 bg-white/90 backdrop-blur-sm shadow-xl">
             <CardHeader className="space-y-1 pb-6">
               <CardTitle className="text-2xl font-bold text-center text-black">Sign Up</CardTitle>
@@ -117,32 +101,26 @@ const Signup = () => {
                 Enter your details to create your account
               </CardDescription>
             </CardHeader>
-
             <form onSubmit={handleSignUp}>
               <CardContent className="space-y-4">
-                <motion.div 
-                  variants={itemVariants}
-                  className="space-y-2"
-                >
-                  <Label htmlFor="name" className="text-black font-medium">Full Name</Label>
+                {/* Username Input */}
+                <motion.div variants={itemVariants} className="space-y-2">
+                  <Label htmlFor="username" className="text-black font-medium">Username</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-black/50" />
                     <Input
-                      id="name"
+                      id="username"
                       type="text"
-                      placeholder="Enter your full name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Your unique username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       className="pl-10 bg-white/50 border-black/20 focus:border-[#c1e141] focus:ring-[#c1e141] text-black placeholder:text-black/50"
                       required
                     />
                   </div>
                 </motion.div>
 
-                <motion.div 
-                  variants={itemVariants}
-                  className="space-y-2"
-                >
+                <motion.div variants={itemVariants} className="space-y-2">
                   <Label htmlFor="email" className="text-black font-medium">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-black/50" />
@@ -157,11 +135,7 @@ const Signup = () => {
                     />
                   </div>
                 </motion.div>
-
-                <motion.div 
-                  variants={itemVariants}
-                  className="space-y-2"
-                >
+                <motion.div variants={itemVariants} className="space-y-2">
                   <Label htmlFor="password" className="text-black font-medium">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-black/50" />
@@ -176,11 +150,7 @@ const Signup = () => {
                     />
                   </div>
                 </motion.div>
-
-                <motion.div 
-                  variants={itemVariants}
-                  className="space-y-2"
-                >
+                <motion.div variants={itemVariants} className="space-y-2">
                   <Label htmlFor="confirmPassword" className="text-black font-medium">Confirm Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-black/50" />
@@ -196,13 +166,8 @@ const Signup = () => {
                   </div>
                 </motion.div>
               </CardContent>
-
               <CardFooter className="flex flex-col space-y-4 pt-6">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full"
-                >
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full">
                   <Button
                     type="submit"
                     className="w-full bg-black hover:bg-black/90 text-white font-semibold py-3 rounded-lg transition-all duration-300 hover:shadow-lg"
@@ -221,7 +186,6 @@ const Signup = () => {
                     )}
                   </Button>
                 </motion.div>
-
                 <div className="text-center text-sm">
                   <span className="text-black/60">Already have an account? </span>
                   <Link

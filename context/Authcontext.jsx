@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 
 import { supabase } from "@/lib/supabaseclient";
 import { createContext, useEffect, useState, useContext } from "react";
@@ -10,8 +9,17 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
 
-  const signUpNewUser = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+  // UPDATED: Now accepts a username
+  const signUpNewUser = async (email, password, username) => {
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          display_name: username,
+        }
+      }
+    });
     if (error) {
       console.error("Error signing up:", error.message);
       return { success: false, error };
