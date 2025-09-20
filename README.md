@@ -4,16 +4,16 @@ Ecosystem for Proactive Health Outcomes
 
 👥 Team Name & Members
 
-Team Name: VitalCircle Innovators
+Team Name: 4 Idiots
 Members:
 
-[Member 1 Name]
+Atharva Gourshete
 
-[Member 2 Name]
+Sarakshi More
 
-[Member 3 Name]
+Yadnesh Bamne
 
-[Member 4 Name]
+Avishkar Paradkar
 
 📝 Problem Statement
 
