@@ -219,7 +219,7 @@ const Navbar = () => {
                   transition={{ delay: 0.4, duration: 0.3 }}
                   className="flex items-center space-x-3"
                 >
-                  <Link href="/signin">
+                  <Link href="/sign-in">
                     <Button
                       variant="ghost"
                       className="text-black hover:bg-black/5 font-medium"
