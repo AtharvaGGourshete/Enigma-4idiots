@@ -46,7 +46,9 @@ AI/ML: XGBoost , Random Forest, Scikit-learn, Pandas, NumPy
 Database: Prisma 
 
 ⚙️ Setup Instructions
+
 🔹 1. Clone Repository
+
 🔹 2. Frontend (Next.js)
     cd Enigma-4idiots
 
