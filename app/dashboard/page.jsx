@@ -126,7 +126,7 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-black text-white min-h-screen p-4 sm:p-6 lg:p-8">
-      <main className="container mx-auto">
+      <main className="container mx-auto mt-16">
         <header className="mb-10">
           <h1 className="text-3xl font-bold tracking-tight">Your Health Dashboard</h1>
           <p className="text-neutral-400 mt-2">A summary of your recent vitals and lifestyle metrics.</p>

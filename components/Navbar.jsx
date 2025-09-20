@@ -69,8 +69,7 @@ const Navbar = () => {
   };
 
   const navigationLinks = [
-    { href: "/", label: "Community" },
-    { href: "/#services", label: "Features" },
+    { href: "/community", label: "Community" },
     { href: "/dashboard", label: "Dashboard" }
   ];
 
