@@ -58,6 +58,6 @@ Database: Prisma
 
     App will be available at 👉 http://localhost:3000
     
-    🔹 3. Backend (ML Models: XGBoost + RandomForest)
+🔹 3. Backend (ML Models: XGBoost + RandomForest)
     
-    🔹 4. Supabase Setup
+🔹 4. Supabase Setup
