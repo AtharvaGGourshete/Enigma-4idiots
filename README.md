@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+VitalCircle – Predictive Chronic Care
 
-## Getting Started
+Ecosystem for Proactive Health Outcomes
 
-First, run the development server:
+👥 Team Name & Members
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Team Name: 4 Idiots
+Members:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Atharva Gourshete
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Sarakshi More
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Yadnesh Bamne
 
-## Learn More
+Avishkar Paradkar
 
-To learn more about Next.js, take a look at the following resources:
+📝 Problem Statement
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Current chronic disease management platforms are reactive data silos. Patients face fatigue from endless manual logging, while clinicians are overwhelmed with unfiltered data, leading to alert fatigue and missed interventions. Patients are left without predictive support until a crisis occurs.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🎯 Objective
 
-## Deploy on Vercel
+Build a web-based predictive ecosystem that co-manages chronic conditions, leveraging AI to anticipate risks, behavioral nudges to sustain engagement, and community support to empower patients and clinicians.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🚀 Core Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Predictive Risk Engine – AI-driven Stability Score forecasting risks (e.g., “High probability of a hypertensive episode in 48 hours”).
+
+Context-Aware Nudges – Personalized prompts (stress, diet, lifestyle adjustments).
+
+Closed-Loop Clinician Connect – Secure portal for clinicians with AI-suggested protocols, prescriptions, and video consults.
+
+Community & Peer Support – Forums and moderated groups for shared experiences.
+
+Goal & Progress Dashboard – Visual journey maps for symptoms, medications, lifestyle habits, and long-term progress.
+
+🛠️ Tech Stack Used
+
+Frontend: Next.js, Tailwind CSS
+
+Backend: Flask (Python), REST APIs, Supabase Auth
+
+AI/ML: XGBoost , Random Forest, Scikit-learn, Pandas, NumPy
+
+Database: Prisma 
+
+⚙️ Setup Instructions
+
+🔹 1. Clone Repository
+
+🔹 2. Frontend (Next.js)
+    cd Enigma-4idiots
+
+    # Install dependencies
+    npm install
+
+    # Start development server
+    npm run dev
+
+    App will be available at 👉 http://localhost:3000
+    
+🔹 3. Backend (ML Models: XGBoost + RandomForest)
+    
+🔹 4. Supabase Setup
